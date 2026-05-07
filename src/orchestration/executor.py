@@ -1,9 +1,11 @@
 import json
 import importlib
 import dlt
+from pyspark.sql import SparkSession
 
+spark = SparkSession.getActiveSession()
 
-CONFIG_PATH = "/Workspace/Users/seu_usuario/callcenter/dlt/dlt_config.json"
+CONFIG_PATH = "/Workspace/Users/lucasenb1@gmail.com/callcenter/dlt/dlt_config.json"
 
 
 with open(CONFIG_PATH, "r") as file:

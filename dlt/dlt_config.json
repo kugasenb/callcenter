@@ -5,7 +5,7 @@
       "layer": "bronze",
       "module": "src.bronze.escritorio_1.discagem",
       "fn": "build_bronze_discagem",
-      "path": "/Volumes/workspace/callcenter/dumps/discagem"
+      "path": "/Volumes/workspace/callcenter/dumps"
     }
   ]
 }

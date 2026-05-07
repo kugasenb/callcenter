@@ -1,0 +1,24 @@
+
+
+
+
+
+
+
+
+{
+  "tables": [
+    {
+      "name": "bronze_discagem",
+
+      "transform": {
+        "module": "src.bronze.escritorio_1.discagem",
+        "fn": "build_bronze_discagem"
+      },
+
+      "params": {
+        "path": "/Volumes/workspace/callcenter/dumps/discagem"
+      }
+    }
+  ]
+}

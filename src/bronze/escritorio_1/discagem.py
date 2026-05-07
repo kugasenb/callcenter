@@ -1,13 +1,13 @@
+from pyspark.sql import DataFrame
 
 
-def build_bronze_discagem(spark, path):
+def build_bronze_discagem(spark, path) -> DataFrame:
 
-    arquivo = r"/Volumes/workspace/callcenter/dumps/discagem_20260101_esc_001.csv"
-
-
-
-
-    df = spark.read.csv(arquivo, header=True, inferSchema=True, sep=";")
-
+    df = (
+        spark.read
+        .option("header", True)
+        .option("sep", ";")
+        .csv(path)
+    )
 
     return df

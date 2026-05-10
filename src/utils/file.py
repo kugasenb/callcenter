@@ -178,3 +178,13 @@ class FileWriter:
         """
 
         df.to_parquet(path, index=False, **kwargs)
+
+
+class Conversor:
+
+    @staticmethod
+    def convert_unix_time():
+        timestamp = datetime.fromtimestamp(
+            file.modificationTime / 1000
+            )
+        return timestamp

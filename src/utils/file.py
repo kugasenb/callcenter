@@ -4,7 +4,7 @@
 
 
 import pandas as pd
-
+from datetime import datetime, timedelta
 
 class FileReader:
     """
@@ -183,8 +183,20 @@ class FileWriter:
 class Conversor:
 
     @staticmethod
-    def convert_unix_time():
+    def convert_unix_time(file):
         timestamp = datetime.fromtimestamp(
             file.modificationTime / 1000
             )
         return timestamp
+    
+
+    @staticmethod
+    def consolidar_lista_df(lista_df):
+
+        df_consolidado = lista_df[0]
+
+        for df in lista_df[1:]:
+
+            df_consolidado = df_consolidado.unionByName(df)
+
+        return df_consolidado

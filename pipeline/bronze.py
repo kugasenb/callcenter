@@ -1,55 +1,53 @@
+from quality.quality import Quality
 
-from callcenter.quality.quality import Quality
 from pyspark.sql import functions as f
+from pyspark.sql import DataFrame
+from pyspark.sql.types import StructType
+from pyspark.sql import SparkSession
+from zoneinfo import ZoneInfo
+from datetime import datetime
 import time
 from pyspark.sql import SparkSession
 
-
-
-valida_schema = Quality.valida_schema
+valida_schema = Quality.validate_schema
 consolida_df = Quality.consolidar_lista_df
 valida_referencia_coluna = Quality.validate_reference_column
 validacao_data = Quality.validate_date_column
 
+spark = SparkSession.getActiveSession()
+
 def bronze(dir_path, df, df_escritorio, schema):
-        
-    data_atual =  time.strftime("%Y%m%d")
+
     dfs = []
 
-    for file in dbutils.fs.ls(dir_path):
+    df_files = (
+        spark.read
+        .format("binaryFile")
+        .load(f"{dir_path}/*")
+    )
 
-        nome_arquivo = file.name
+    arquivos = [
+        row.path
+        for row in df_files.select("path").collect()
+    ]
 
-        # CAPTURA A DATA DO ARQUIVO #
-        data_arquivo = nome_arquivo.split("_")[1]
+    for file_path in arquivos:
 
-        if data_arquivo == data_atual:
-        
+        nome_arquivo = file_path.split("/")[-1]
 
-            file_path = f"{dir_path}/{nome_arquivo}"
+        partes_nome = nome_arquivo.split("_")
 
-            # LEITURA INICIAL DO ARQUIVO #
-            df_process = spark.read.csv(file_path, sep=";", header=True)
+        if len(partes_nome) < 2:
+            continue
 
+        data_arquivo = partes_nome[1]
 
-            status_validation = valida_schema(df=df_process, schema=schema)
-
-            df_sf = df_process.withColumn(
-                "source_file",
-                f.lit(file_path)
-            )
+        # TEMPORARIAMENTE SEM FILTRO
+        if nome_arquivo == "discagem_20260510_esc_002.csv":
+            print(nome_arquivo)
+            df = spark.read.csv(file_path, header=True, sep=";")
+            
 
 
-            if status_validation:
-                dfs.append(df_sf)
-            else:
-                print("Schema inválido")
-                print("Arquivo: ", file_path)
 
-            df_united = consolida_df(dfs)
-
-            df = validacao_data(df_united, column_name="data_discagem", date_format="yyyy-MM-dd")
-
-            df_flag_fin = valida_referencia_coluna(df, df_escritorio, column_name="id_escritorio")
-
-            return df_flag_fin
+    return df

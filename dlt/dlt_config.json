@@ -1,11 +1,35 @@
+
+
+
 {
   "tables": [
     {
-      "name": "bronze_discagem",
-      "layer": "bronze",
-      "module": "src.bronze.escritorio_1.discagem",
-      "fn": "build_bronze_discagem",
-      "path": "/Volumes/workspace/callcenter/dumps"
+      "name": "bronze_discagem"
+      , "catalog": "callcenter"
+      , "schema": "arquivo_retorno"
+      , "type": "table"
+
+      , "transform": {
+        "module": "pipeline.bronze"
+        , "fn": "bronze"
+      }
+      , "params": {
+        "dir_path": "/Volumes/workspace/callcenter/disc_volumes/landing"
+        , "df": null
+        , "df_escritorio": null
+        , "schema": {
+            "module": "src.schemas.schemas_medalion"
+            , "name": "SCHEMA_BRONZE_DISCAGEM"
+          }
+      }
+
+      , "sources": []
+
+
+
+
+
+
     }
   ]
 }

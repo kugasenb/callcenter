@@ -1,32 +1,53 @@
 import json
 import importlib
 import dlt
+
 from pyspark.sql import SparkSession
 
 spark = SparkSession.getActiveSession()
 
 CONFIG_PATH = "/Workspace/Users/lucasenb1@gmail.com/callcenter/dlt/dlt_config.json"
 
-
 with open(CONFIG_PATH, "r") as file:
+
     CONFIG = json.load(file)
 
 
 for table in CONFIG["tables"]:
 
-    module = importlib.import_module(table["module"])
+    module = importlib.import_module(
+        table["transform"]["module"]
+    )
 
-    transform_function = getattr(module, table["fn"])
+    transform_function = getattr(
+        module,
+        table["transform"]["fn"]
+    )
 
-    table_name = table["name"]
+    catalog = table["catalog"]
 
-    path = table["path"]
+    schema = table["schema"]
 
-    def create_table(fn=transform_function, path=path):
-        return fn(spark, path)
+    full_table_name = (
+        f"{catalog}.{schema}.{table['name']}"
+    )
 
-    create_table.__name__ = table_name
+    path = table["params"]["dir_path"]
+
+    def create_table(
+        fn=transform_function,
+        path=path
+    ):
+
+        return fn(
+            dir_path=path,
+            df=None,
+            df_escritorio=None,
+            schema=None
+        )
+
+    create_table.__name__ = table["name"]
 
     dlt.table(
-        name=table_name
+        name=full_table_name
     )(create_table)

@@ -32,18 +32,37 @@ for table in CONFIG["tables"]:
         f"{catalog}.{schema}.{table['name']}"
     )
 
-    path = table["params"]["dir_path"]
+    params = table.get(
+        "params",
+        {}
+    )
+
+    sources = table.get(
+        "sources",
+        []
+    )
 
     def create_table(
         fn=transform_function,
-        path=path
+        params=params,
+        sources=sources
     ):
 
+        kwargs = {}
+
+        for source in sources:
+
+            alias = source["alias"]
+
+            source_table = source["table"]
+
+            kwargs[alias] = dlt.read(
+                source_table
+            )
+
         return fn(
-            dir_path=path,
-            df=None,
-            df_escritorio=None,
-            schema=None
+            **kwargs,
+            **params
         )
 
     create_table.__name__ = table["name"]

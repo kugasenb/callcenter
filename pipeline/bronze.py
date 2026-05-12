@@ -16,38 +16,16 @@ validacao_data = Quality.validate_date_column
 
 spark = SparkSession.getActiveSession()
 
-def bronze(dir_path, df, df_escritorio, schema):
-
-    dfs = []
-
-    df_files = (
-        spark.read
-        .format("binaryFile")
-        .load(f"{dir_path}/*")
+def bronze(df, dir_path, schema):
+    
+    
+    df = spark.read.csv(dir_path, header=True, sep=";")
+    df_fl_fin = df.withColumn(
+        "fl_bronze",
+        f.lit("campo_bronze")
     )
-
-    arquivos = [
-        row.path
-        for row in df_files.select("path").collect()
-    ]
-
-    for file_path in arquivos:
-
-        nome_arquivo = file_path.split("/")[-1]
-
-        partes_nome = nome_arquivo.split("_")
-
-        if len(partes_nome) < 2:
-            continue
-
-        data_arquivo = partes_nome[1]
-
-        # TEMPORARIAMENTE SEM FILTRO
-        if nome_arquivo == "discagem_20260510_esc_002.csv":
-            print(nome_arquivo)
-            df = spark.read.csv(file_path, header=True, sep=";")
-            
+                
 
 
 
-    return df
+    return df_fl_fin

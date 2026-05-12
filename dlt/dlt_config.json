@@ -1,35 +1,59 @@
-
-
-
 {
   "tables": [
+
     {
-      "name": "bronze_discagem"
-      , "catalog": "callcenter"
-      , "schema": "arquivo_retorno"
-      , "type": "table"
+      "name": "bronze_discagem",
 
-      , "transform": {
-        "module": "pipeline.bronze"
-        , "fn": "bronze"
-      }
-      , "params": {
-        "dir_path": "/Volumes/workspace/callcenter/disc_volumes/landing"
-        , "df": null
-        , "df_escritorio": null
-        , "schema": {
-            "module": "src.schemas.schemas_medalion"
-            , "name": "SCHEMA_BRONZE_DISCAGEM"
-          }
-      }
+      "catalog": "callcenter",
+      "schema": "arquivo_retorno",
+      "type": "table",
 
-      , "sources": []
+      "transform": {
+        "module": "pipeline.bronze",
+        "fn": "bronze"
+      },
 
+      "params": {
+        "dir_path": "/Volumes/workspace/callcenter/disc_volumes/landing",
 
+        "df": null,
 
+        "schema": {
+          "module": "src.schemas.schemas_medalion",
+          "name": "SCHEMA_BRONZE_DISCAGEM"
+        }
+      },
 
+      "sources": []
+    },
 
+    {
+      "name": "silver_discagem",
 
+      "catalog": "callcenter",
+      "schema": "arquivo_retorno",
+      "type": "table",
+
+      "transform": {
+        "module": "pipeline.silver",
+        "fn": "silver"
+      },
+
+      "params": {
+       
+        "schema": {
+          "module": "src.schemas.schemas_medalion",
+          "name": "SCHEMA_BRONZE_DISCAGEM"
+        }
+      },
+
+      "sources": [
+    {
+      "alias": "df",
+      "table": "callcenter.arquivo_retorno.bronze_discagem"
     }
+    ]
+    }
+
   ]
 }

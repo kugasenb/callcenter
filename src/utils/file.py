@@ -5,6 +5,14 @@
 
 import pandas as pd
 from datetime import datetime, timedelta
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as f
+
+
+
+spark = SparkSession.builder \
+    .appName("") \
+    .getOrCreate()
 
 class FileReader:
     """
@@ -19,21 +27,26 @@ class FileReader:
     """
 
     @staticmethod
-    def read_csv(path: str, **kwargs) -> pd.DataFrame:
-        """
-        Realiza a leitura de um arquivo CSV.
+    def read_csv(path: str, use_spark=False, **kwargs):
+        from pyspark.sql import functions as f
 
-        Args:
-            path (str):
-                Caminho completo do arquivo.
+        if use_spark:
 
-            **kwargs:
-                Parâmetros adicionais do pandas.read_csv().
-
-        Returns:
-            pd.DataFrame:
-                DataFrame contendo os dados do arquivo.
-        """
+            return (
+                spark.read
+                .options(**kwargs)
+                .csv(path)
+                .withColumn(
+                    "source_file",
+                    f.element_at(
+                        f.split(
+                            f.col("_metadata.file_path"),
+                            "/"
+                        ),
+                        -1
+                    )
+                )
+            )
 
         return pd.read_csv(path, **kwargs)
 
@@ -191,12 +204,13 @@ class Conversor:
     
 
     @staticmethod
-    def consolidar_lista_df(lista_df):
+    def convert_columns(df, columns: list, target_type: str):
 
-        df_consolidado = lista_df[0]
+        for column in columns:
 
-        for df in lista_df[1:]:
+            df = df.withColumn(
+                column,
+                f.col(column).cast(target_type)
+            )
 
-            df_consolidado = df_consolidado.unionByName(df)
-
-        return df_consolidado
+        return df

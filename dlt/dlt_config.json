@@ -1,6 +1,7 @@
 {
   "tables": [
 
+    
     {
       "name": "bronze_discagem",
 
@@ -10,18 +11,11 @@
 
       "transform": {
         "module": "pipeline.bronze",
-        "fn": "bronze"
+        "fn": "brz_disc_call"
       },
 
       "params": {
-        "dir_path": "/Volumes/workspace/callcenter/disc_volumes/landing",
-
-        "df": null,
-
-        "schema": {
-          "module": "src.schemas.schemas_medalion",
-          "name": "SCHEMA_BRONZE_DISCAGEM"
-        }
+        "dir_path": "/Volumes/workspace/callcenter/disc_volumes/landing/"
       },
 
       "sources": []
@@ -39,20 +33,124 @@
         "fn": "silver"
       },
 
-      "params": {
-       
-        "schema": {
-          "module": "src.schemas.schemas_medalion",
-          "name": "SCHEMA_BRONZE_DISCAGEM"
-        }
-      },
+      "params": {},
 
       "sources": [
+        {
+          "alias": "df",
+          "table": "callcenter.arquivo_retorno.bronze_discagem"
+        }
+      ]
+    },
+
     {
-      "alias": "df",
-      "table": "callcenter.arquivo_retorno.bronze_discagem"
-    }
-    ]
+      "name": "gold_discagem_dia",
+
+      "catalog": "callcenter",
+      "schema": "gold",
+      "type": "table",
+
+      "transform": {
+        "module": "pipeline.gold",
+        "fn": "gld_discagem_dia"
+      },
+
+      "params": {},
+
+      "sources": [
+        {
+          "alias": "df",
+          "table": "callcenter.arquivo_retorno.silver_discagem"
+        }
+      ]
+    },
+
+    {
+      "name": "gold_colaborador",
+
+      "catalog": "callcenter",
+      "schema": "gold",
+      "type": "table",
+
+      "transform": {
+        "module": "pipeline.gold",
+        "fn": "gld_colaborador"
+      },
+
+      "params": {},
+
+      "sources": [
+        {
+          "alias": "df",
+          "table": "callcenter.arquivo_retorno.silver_discagem"
+        }
+      ]
+    },
+
+    {
+      "name": "gold_fila",
+
+      "catalog": "callcenter",
+      "schema": "gold",
+      "type": "table",
+
+      "transform": {
+        "module": "pipeline.gold",
+        "fn": "gld_fila"
+      },
+
+      "params": {},
+
+      "sources": [
+        {
+          "alias": "df",
+          "table": "callcenter.arquivo_retorno.silver_discagem"
+        }
+      ]
+    },
+
+    {
+      "name": "gold_finalizacao",
+
+      "catalog": "callcenter",
+      "schema": "gold",
+      "type": "table",
+
+      "transform": {
+        "module": "pipeline.gold",
+        "fn": "gld_finalizacao"
+      },
+
+      "params": {},
+
+      "sources": [
+        {
+          "alias": "df",
+          "table": "callcenter.arquivo_retorno.silver_discagem"
+        }
+      ]
+    },
+
+    {
+      "name": "gold_hora",
+
+      "catalog": "callcenter",
+      "schema": "gold",
+      "type": "table",
+
+      "transform": {
+        "module": "pipeline.gold",
+        "fn": "gld_hora"
+      },
+
+      "params": {},
+
+      "sources": [
+        {
+          "alias": "df",
+          "table": "callcenter.arquivo_retorno.silver_discagem"
+        }
+      ]
     }
 
   ]

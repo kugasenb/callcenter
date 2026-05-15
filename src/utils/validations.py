@@ -25,3 +25,24 @@ class ValidationSchema:
 
             print("Extras:")
             print(campos_arquivo - campos_schema)
+
+    @staticmethod
+    def valida_arquivos(data_atual: str = None):
+        """
+        data_atual formato: YYYYMMDD
+        exemplo: 20260514
+        """
+
+        if data_atual is None:
+            data_atual = datetime.now().strftime("%Y%m%d")
+
+        arquivos_hoje = [
+            file.name
+            for file in dbutils.fs.ls(
+                "/Volumes/workspace/callcenter/disc_volumes/landing/"
+            )
+            if data_atual in file.name
+        ]
+
+        for file in arquivos_hoje:
+            print(file)

@@ -1,31 +1,24 @@
-from quality.quality import Quality
-
-from pyspark.sql import functions as f
-from pyspark.sql import DataFrame
-from pyspark.sql.types import StructType
-from pyspark.sql import SparkSession
-from zoneinfo import ZoneInfo
-from datetime import datetime
+import pandas as pd
 import time
+from pyspark.sql import functions as f
+from pyspark.sql import types as t
+import random
+from src.utils.validations import *
+from src.utils.file import *
+from datetime import datetime
 from pyspark.sql import SparkSession
 
-valida_schema = Quality.validate_schema
-consolida_df = Quality.consolidar_lista_df
-valida_referencia_coluna = Quality.validate_reference_column
-validacao_data = Quality.validate_date_column
 
 spark = SparkSession.getActiveSession()
 
-def bronze(df, dir_path, schema):
-    
-    
-    df = spark.read.csv(dir_path, header=True, sep=";")
-    df_fl_fin = df.withColumn(
-        "fl_bronze",
-        f.lit("campo_bronze")
+def brz_disc_call(dir_path):
+    data_hoje = datetime.now().strftime("%Y%m%d")
+
+    path_hoje = (
+    f"{dir_path}"
+    f"discagem_{data_hoje}_*.csv"
     )
-                
-
-
-
-    return df_fl_fin
+    
+    df_carga = FileReader.read_csv(path=path_hoje, header=True, use_spark=True, sep=";")
+    
+    return df_carga

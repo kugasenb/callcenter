@@ -8,19 +8,26 @@ from zoneinfo import ZoneInfo
 from datetime import datetime
 import time
 from pyspark.sql import SparkSession
+from src.utils.file import Conversor
 
-valida_schema = Quality.validate_schema
-consolida_df = Quality.consolidar_lista_df
-valida_referencia_coluna = Quality.validate_reference_column
-validacao_data = Quality.validate_date_column
 
 spark = SparkSession.getActiveSession()
 
-def silver(df, schema):
+def silver(df):
+    campos_int = [
+        "tempo_espera_s"
+        , "tempo_atend_s"
+    ]
+    campos_float = [
+        "valor_acordo"
+    ]
 
-    df_fl_fin = df.withColumn(
-    "fl_silver",
-    f.lit("campo_silver"))
+    campos_data = [
+        "data_discagem"
+    ]
 
 
-    return df_fl_fin
+    df_int =  Conversor.convert_columns(df=df, columns=campos_int, target_type="int")
+
+
+    return df_int

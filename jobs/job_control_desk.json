@@ -1,0 +1,20 @@
+{
+  "name": "job_arquivo_retorno",
+
+  "tasks": [
+    {
+      "task_key": "pl_medalion_disc",
+
+      "pipeline_task": {
+        "pipeline_id": "cc8c5dfe-450a-4cab-baa2-83349cb5f23d"
+      }
+    }
+  ],
+
+  "schedule": {
+    "quartz_cron_expression": "0 0 9 * * ?",
+    "timezone_id": "America/Sao_Paulo"
+  },
+
+  "max_concurrent_runs": 1
+}

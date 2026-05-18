@@ -21,9 +21,9 @@ class Rules:
     def validar_data(df):
 
         df_erro = df.filter(
-            f.to_date(
+            f.try_to_timestamp(
                 f.col("data_discagem"),
-                "dd/MM/yyyy"
+                f.lit("yyyy-MM-dd")
             ).isNull()
         )
 

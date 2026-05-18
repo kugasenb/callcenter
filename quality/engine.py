@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 
@@ -23,9 +22,17 @@ class Engine:
 
         payload = {
 
+            "id_execucao": int(
+                datetime.now().timestamp()
+            ),
+
             "arquivo": nm_arquivo,
 
+            "escritorio": "esc_001",
+
             "status": status,
+
+            "total_linhas": 0,
 
             "total_erros": total_erros,
 

@@ -1,6 +1,5 @@
-# writer.py
-
 from pyspark.sql import SparkSession
+from datetime import datetime
 
 
 spark = SparkSession.getActiveSession()
@@ -12,8 +11,11 @@ class Writer:
     def gravar_execucao(payload):
 
         data = [(
+            payload["id_execucao"],
             payload["arquivo"],
+            payload["escritorio"],
             payload["status"],
+            payload["total_linhas"],
             payload["total_erros"],
             payload["dt_execucao"]
         )]
@@ -21,8 +23,11 @@ class Writer:
         df = spark.createDataFrame(
             data,
             [
+                "id_execucao",
                 "arquivo",
+                "escritorio",
                 "status_arquivo",
+                "total_linhas",
                 "total_erros",
                 "dt_execucao"
             ]
@@ -46,9 +51,11 @@ class Writer:
             if r["total_erros"] > 0:
 
                 data.append((
+                    payload["id_execucao"],
                     r["regra"],
-                    r["campo"],
-                    r["total_erros"]
+                    "alta",
+                    f'{r["campo"]} com {r["total_erros"]} erros',
+                    datetime.now()
                 ))
 
         if not data:
@@ -57,9 +64,11 @@ class Writer:
         df = spark.createDataFrame(
             data,
             [
+                "id_execucao",
                 "regra",
-                "campo",
-                "total_erros"
+                "severidade",
+                "detalhe",
+                "dt_erro"
             ]
         )
 
@@ -68,5 +77,58 @@ class Writer:
             .mode("append")
             .saveAsTable(
                 "quality.erros_arquivo"
+            )
+        )
+
+    @staticmethod
+    def gravar_erros_linha(payload):
+
+        data = []
+
+        for r in payload["resultados"]:
+
+            if r["total_erros"] > 0:
+
+                amostra = r["amostra"].collect()
+
+                for row in amostra:
+
+                    data.append((
+                        payload["id_execucao"],
+                        row["linha_arquivo"]
+                        if "linha_arquivo" in row
+                        else None,
+
+                        r["campo"],
+                        r["regra"],
+
+                        str(
+                            row[r["campo"]]
+                        ) if r["campo"] in row
+                        else None,
+
+                        datetime.now()
+                    ))
+
+        if not data:
+            return
+
+        df = spark.createDataFrame(
+            data,
+            [
+                "id_execucao",
+                "linha_arquivo",
+                "campo",
+                "tipo_erro",
+                "valor_original",
+                "dt_erro"
+            ]
+        )
+
+        (
+            df.write
+            .mode("append")
+            .saveAsTable(
+                "quality.erros_linha"
             )
         )

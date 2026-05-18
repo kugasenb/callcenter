@@ -44,8 +44,4 @@ class Quality:
 
         if payload["status"] == "rejeitado":
 
-            raise Exception(
-                f"Arquivo rejeitado: {nm_arquivo}"
-            )
-
-        return df
+            return payload

@@ -1,5 +1,8 @@
-from pyspark.sql import SparkSession
 from datetime import datetime
+
+from pyspark.sql import SparkSession
+
+from src.schemas.quality import SCHEMA_QUALITY
 
 
 spark = SparkSession.getActiveSession()
@@ -21,7 +24,9 @@ class Writer:
         )]
 
         df = spark.createDataFrame(
+
             data,
+
             [
                 "id_execucao",
                 "arquivo",
@@ -41,6 +46,10 @@ class Writer:
             )
         )
 
+    # =====================================================
+    # ERROS ARQUIVO
+    # =====================================================
+
     @staticmethod
     def gravar_erros_arquivo(payload):
 
@@ -51,18 +60,27 @@ class Writer:
             if r["total_erros"] > 0:
 
                 data.append((
+
                     payload["id_execucao"],
+
                     r["regra"],
+
                     "alta",
-                    f'{r["campo"]} com {r["total_erros"]} erros',
+
+                    f'{r["campo"]} com '
+                    f'{r["total_erros"]} erros',
+
                     datetime.now()
+
                 ))
 
         if not data:
             return
 
         df = spark.createDataFrame(
+
             data,
+
             [
                 "id_execucao",
                 "regra",
@@ -80,6 +98,10 @@ class Writer:
             )
         )
 
+    # =====================================================
+    # ERROS LINHA
+    # =====================================================
+
     @staticmethod
     def gravar_erros_linha(payload):
 
@@ -94,12 +116,13 @@ class Writer:
                 for row in amostra:
 
                     data.append((
+
                         payload["id_execucao"],
-                        row["linha_arquivo"]
-                        if "linha_arquivo" in row
-                        else None,
+
+                        None,
 
                         r["campo"],
+
                         r["regra"],
 
                         str(
@@ -108,21 +131,18 @@ class Writer:
                         else None,
 
                         datetime.now()
+
                     ))
 
         if not data:
             return
 
         df = spark.createDataFrame(
-            data,
-            [
-                "id_execucao",
-                "linha_arquivo",
-                "campo",
-                "tipo_erro",
-                "valor_original",
-                "dt_erro"
-            ]
+
+            data=data,
+
+            schema=SCHEMA_QUALITY
+
         )
 
         (

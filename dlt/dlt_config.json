@@ -41,9 +41,9 @@
           "table": "callcenter.arquivo_retorno.bronze_discagem"
         }
       ]
-    },
-
-    {
+    }
+    
+    , {
       "name": "gold_discagem_dia",
 
       "catalog": "callcenter",

@@ -6,14 +6,47 @@ from pyspark.sql import SparkSession
 
 spark = SparkSession.getActiveSession()
 
-CONFIG_PATH = "/Workspace/Users/lucasenb1@gmail.com/callcenter/dlt/dlt_config.json"
+# ============================================
+# PATH CONFIG
+# ============================================
+
+workspace_path = (
+    dbutils.notebook.entry_point
+    .getDbutils()
+    .notebook()
+    .getContext()
+    .notebookPath()
+    .get()
+)
+
+repo_root = "/".join(workspace_path.split("/")[:4])
+
+CONFIG_PATH = f"/Workspace{repo_root}/dlt/dlt_config.json"
+
+# ============================================
+# LOAD CONFIG
+# ============================================
 
 with open(CONFIG_PATH, "r") as file:
 
     CONFIG = json.load(file)
 
+# ============================================
+# BUILD TABLES
+# ============================================
 
 for table in CONFIG["tables"]:
+
+    # ========================================
+    # IGNORE METADATA
+    # ========================================
+
+    if "name" not in table:
+        continue
+
+    # ========================================
+    # IMPORT MODULE
+    # ========================================
 
     module = importlib.import_module(
         table["transform"]["module"]
@@ -24,49 +57,48 @@ for table in CONFIG["tables"]:
         table["transform"]["fn"]
     )
 
-    catalog = table["catalog"]
+    # ========================================
+    # BUILD TABLE
+    # ========================================
 
-    schema = table["schema"]
-
-    full_table_name = (
-        f"{catalog}.{schema}.{table['name']}"
-    )
-
-    params = table.get(
-        "params",
-        {}
-    )
-
-    sources = table.get(
-        "sources",
-        []
-    )
-
-    def create_table(
-        fn=transform_function,
-        params=params,
-        sources=sources
+    def build_table(
+        transform_function=transform_function,
+        table=table
     ):
 
-        kwargs = {}
+        # ====================================
+        # SOURCES
+        # ====================================
 
-        for source in sources:
+        sources = {}
+
+        for source in table["sources"]:
 
             alias = source["alias"]
-
             source_table = source["table"]
+            
+            sources[alias] = dlt.read(source_table.split(".")[-1])
 
-            kwargs[alias] = dlt.read(
-                source_table
-            )
 
-        return fn(
-            **kwargs,
+        # ====================================
+        # PARAMS
+        # ====================================
+
+        params = table.get("params", {})
+
+        # ====================================
+        # EXECUTE
+        # ====================================
+
+        return transform_function(
+            **sources,
             **params
         )
 
-    create_table.__name__ = table["name"]
+    # ========================================
+    # DLT TABLE
+    # ========================================
 
     dlt.table(
-        name=full_table_name
-    )(create_table)
+        name=table["name"]
+    )(build_table)

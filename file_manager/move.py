@@ -1,42 +1,31 @@
 from pyspark.sql import SparkSession
-from pathlib import Path
-import shutil
+from pyspark.dbutils import DBUtils
 
 
 spark = SparkSession.getActiveSession()
 
+dbutils = DBUtils(spark)
+
 
 class FileManager:
 
-    BASE_PATH = "/Volumes/workspace/callcenter/disc_volumes"
+    BASE_PATH = "dbfs:/Volumes/workspace/callcenter/disc_volumes"
 
     @staticmethod
     def move_file(source_path: str, target_folder: str):
 
-        source = Path(source_path)
-
-        target_dir = Path(
-            f"{FileManager.BASE_PATH}/{target_folder}"
+        target_path = (
+            f"{FileManager.BASE_PATH}/"
+            f"{target_folder}/"
+            f"{source_path.split('/')[-1]}"
         )
 
-        target_dir.mkdir(parents=True, exist_ok=True)
-
-        target_path = target_dir / source.name
-
-        shutil.move(
-            str(source),
-            str(target_path)
+        dbutils.fs.mv(
+            source_path,
+            target_path
         )
 
-        return str(target_path)
-
-    @staticmethod
-    def move_to_processing(source_path: str):
-
-        return FileManager.move_file(
-            source_path=source_path,
-            target_folder="processing"
-        )
+        return target_path
 
     @staticmethod
     def move_to_processed(source_path: str):
@@ -59,5 +48,5 @@ class FileManager:
 
         return FileManager.move_file(
             source_path=source_path,
-            target_folder="approved"
+            target_folder="aproved"
         )

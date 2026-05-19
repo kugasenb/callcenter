@@ -1,4 +1,4 @@
-from quality.quality import Quality
+from quality.pipeline.quality_discagem import Quality
 
 from pyspark.sql import functions as f
 from pyspark.sql import DataFrame

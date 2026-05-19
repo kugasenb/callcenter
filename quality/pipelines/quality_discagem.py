@@ -1,6 +1,6 @@
-from quality.rules import Rules
-from quality.engine import Engine
-from quality.writer import Writer
+from quality.engine.rules import Rules
+from quality.engine.engine import Engine
+from quality.writers.writer import Writer
 
 
 class Quality:

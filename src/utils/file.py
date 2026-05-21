@@ -1,18 +1,11 @@
-
-
-
-
-
 import pandas as pd
 from datetime import datetime, timedelta
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
 
 
+spark = SparkSession.builder.appName("").getOrCreate()
 
-spark = SparkSession.builder \
-    .appName("") \
-    .getOrCreate()
 
 class FileReader:
     """
@@ -31,20 +24,12 @@ class FileReader:
         from pyspark.sql import functions as f
 
         if use_spark:
-
             return (
-                spark.read
-                .options(**kwargs)
+                spark.read.options(**kwargs)
                 .csv(path)
                 .withColumn(
                     "source_file",
-                    f.element_at(
-                        f.split(
-                            f.col("_metadata.file_path"),
-                            "/"
-                        ),
-                        -1
-                    )
+                    f.element_at(f.split(f.col("_metadata.file_path"), "/"), -1),
                 )
             )
 
@@ -194,23 +179,14 @@ class FileWriter:
 
 
 class Conversor:
-
     @staticmethod
     def convert_unix_time(file):
-        timestamp = datetime.fromtimestamp(
-            file.modificationTime / 1000
-            )
+        timestamp = datetime.fromtimestamp(file.modificationTime / 1000)
         return timestamp
-    
 
     @staticmethod
     def convert_columns(df, columns: list, target_type: str):
-
         for column in columns:
-
-            df = df.withColumn(
-                column,
-                f.col(column).cast(target_type)
-            )
+            df = df.withColumn(column, f.col(column).cast(target_type))
 
         return df

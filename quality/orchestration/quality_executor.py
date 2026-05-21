@@ -11,8 +11,7 @@ spark = SparkSession.getActiveSession()
 # ============================================
 
 workspace_path = (
-    dbutils.notebook.entry_point
-    .getDbutils()
+    dbutils.notebook.entry_point.getDbutils()
     .notebook()
     .getContext()
     .notebookPath()
@@ -21,18 +20,13 @@ workspace_path = (
 
 repo_root = "/".join(workspace_path.split("/")[:4])
 
-CONFIG_PATH = (
-    f"file:/Workspace{repo_root}/quality/dlt/dlt_config_quality.json"
-)
+CONFIG_PATH = f"file:/Workspace{repo_root}/quality/dlt/dlt_config_quality.json"
 
 # ============================================
 # LOAD CONFIG
 # ============================================
 
-config_content = dbutils.fs.head(
-    CONFIG_PATH,
-    100000
-)
+config_content = dbutils.fs.head(CONFIG_PATH, 100000)
 
 CONFIG = json.loads(config_content)
 
@@ -41,27 +35,13 @@ CONFIG = json.loads(config_content)
 # ============================================
 
 for table in CONFIG["tables"]:
+    module = importlib.import_module(table["transform"]["module"])
 
-    module = importlib.import_module(
-        table["transform"]["module"]
-    )
+    transform_function = getattr(module, table["transform"]["fn"])
 
-    transform_function = getattr(
-        module,
-        table["transform"]["fn"]
-    )
-
-    def build_table(
-        transform_function=transform_function,
-        table=table
-    ):
-
+    def build_table(transform_function=transform_function, table=table):
         params = table.get("params", {})
 
-        return transform_function(
-            **params
-        )
+        return transform_function(**params)
 
-    dlt.table(
-        name=table["name"]
-    )(build_table)
+    dlt.table(name=table["name"])(build_table)

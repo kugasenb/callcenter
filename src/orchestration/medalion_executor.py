@@ -11,8 +11,7 @@ spark = SparkSession.getActiveSession()
 # ============================================
 
 workspace_path = (
-    dbutils.notebook.entry_point
-    .getDbutils()
+    dbutils.notebook.entry_point.getDbutils()
     .notebook()
     .getContext()
     .notebookPath()
@@ -28,7 +27,6 @@ CONFIG_PATH = f"/Workspace{repo_root}/dlt/medalion/dlt_config.json"
 # ============================================
 
 with open(CONFIG_PATH, "r") as file:
-
     CONFIG = json.load(file)
 
 # ============================================
@@ -36,7 +34,6 @@ with open(CONFIG_PATH, "r") as file:
 # ============================================
 
 for table in CONFIG["tables"]:
-
     # ========================================
     # IGNORE METADATA
     # ========================================
@@ -48,24 +45,15 @@ for table in CONFIG["tables"]:
     # IMPORT MODULE
     # ========================================
 
-    module = importlib.import_module(
-        table["transform"]["module"]
-    )
+    module = importlib.import_module(table["transform"]["module"])
 
-    transform_function = getattr(
-        module,
-        table["transform"]["fn"]
-    )
+    transform_function = getattr(module, table["transform"]["fn"])
 
     # ========================================
     # BUILD TABLE
     # ========================================
 
-    def build_table(
-        transform_function=transform_function,
-        table=table
-    ):
-
+    def build_table(transform_function=transform_function, table=table):
         # ====================================
         # SOURCES
         # ====================================
@@ -73,12 +61,10 @@ for table in CONFIG["tables"]:
         sources = {}
 
         for source in table["sources"]:
-
             alias = source["alias"]
             source_table = source["table"]
-            
-            sources[alias] = dlt.read(source_table.split(".")[-1])
 
+            sources[alias] = dlt.read(source_table.split(".")[-1])
 
         # ====================================
         # PARAMS
@@ -90,15 +76,10 @@ for table in CONFIG["tables"]:
         # EXECUTE
         # ====================================
 
-        return transform_function(
-            **sources,
-            **params
-        )
+        return transform_function(**sources, **params)
 
     # ========================================
     # DLT TABLE
     # ========================================
 
-    dlt.table(
-        name=table["name"]
-    )(build_table)
+    dlt.table(name=table["name"])(build_table)

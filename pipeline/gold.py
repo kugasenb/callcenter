@@ -11,17 +11,13 @@ from pyspark.sql import SparkSession
 # GOLD - DISCAGEM DIA
 # =========================================
 
-def gld_discagem_dia(df):
 
-    return (
-        df
-        .groupBy("data_discagem")
-        .agg(
-            f.count("id_chamada").alias("tot_discagens"),
-            f.countDistinct("id_contrato").alias("tot_contratos"),
-            f.sum("valor_acordo").alias("vlr_total_acordo"),
-            f.avg("tempo_atend_s").alias("avg_tempo_atendimento")
-        )
+def gld_discagem_dia(df):
+    return df.groupBy("data_discagem").agg(
+        f.count("id_chamada").alias("tot_discagens"),
+        f.countDistinct("id_contrato").alias("tot_contratos"),
+        f.sum("valor_acordo").alias("vlr_total_acordo"),
+        f.avg("tempo_atend_s").alias("avg_tempo_atendimento"),
     )
 
 
@@ -29,16 +25,12 @@ def gld_discagem_dia(df):
 # GOLD - COLABORADOR
 # =========================================
 
-def gld_colaborador(df):
 
-    return (
-        df
-        .groupBy("id_colaborador")
-        .agg(
-            f.count("id_chamada").alias("tot_discagens"),
-            f.sum("valor_acordo").alias("vlr_total_acordo"),
-            f.avg("tempo_atend_s").alias("avg_tempo_atendimento")
-        )
+def gld_colaborador(df):
+    return df.groupBy("id_colaborador").agg(
+        f.count("id_chamada").alias("tot_discagens"),
+        f.sum("valor_acordo").alias("vlr_total_acordo"),
+        f.avg("tempo_atend_s").alias("avg_tempo_atendimento"),
     )
 
 
@@ -46,15 +38,11 @@ def gld_colaborador(df):
 # GOLD - FILA
 # =========================================
 
-def gld_fila(df):
 
-    return (
-        df
-        .groupBy("fila")
-        .agg(
-            f.count("id_chamada").alias("tot_discagens"),
-            f.sum("valor_acordo").alias("vlr_total_acordo")
-        )
+def gld_fila(df):
+    return df.groupBy("fila").agg(
+        f.count("id_chamada").alias("tot_discagens"),
+        f.sum("valor_acordo").alias("vlr_total_acordo"),
     )
 
 
@@ -62,15 +50,11 @@ def gld_fila(df):
 # GOLD - FINALIZACAO
 # =========================================
 
-def gld_finalizacao(df):
 
-    return (
-        df
-        .groupBy("finalizacao")
-        .agg(
-            f.count("id_chamada").alias("tot_discagens"),
-            f.sum("valor_acordo").alias("vlr_total_acordo")
-        )
+def gld_finalizacao(df):
+    return df.groupBy("finalizacao").agg(
+        f.count("id_chamada").alias("tot_discagens"),
+        f.sum("valor_acordo").alias("vlr_total_acordo"),
     )
 
 
@@ -78,17 +62,13 @@ def gld_finalizacao(df):
 # GOLD - HORA
 # =========================================
 
-def gld_hora(df):
 
+def gld_hora(df):
     return (
-        df
-        .withColumn(
-            "hora",
-            f.hour("hora_inicio")
-        )
+        df.withColumn("hora", f.hour("hora_inicio"))
         .groupBy("hora")
         .agg(
             f.count("id_chamada").alias("tot_discagens"),
-            f.sum("valor_acordo").alias("vlr_total_acordo")
+            f.sum("valor_acordo").alias("vlr_total_acordo"),
         )
     )

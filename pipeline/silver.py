@@ -11,21 +11,13 @@ from src.utils.file import Conversor
 
 spark = SparkSession.getActiveSession()
 
+
 def silver(df):
-    campos_int = [
-        "tempo_espera_s"
-        , "tempo_atend_s"
-    ]
-    campos_float = [
-        "valor_acordo"
-    ]
+    campos_int = ["tempo_espera_s", "tempo_atend_s"]
+    campos_float = ["valor_acordo"]
 
-    campos_data = [
-        "data_discagem"
-    ]
+    campos_data = ["data_discagem"]
 
-
-    df_int =  Conversor.convert_columns(df=df, columns=campos_int, target_type="int")
-
+    df_int = Conversor.convert_columns(df=df, columns=campos_int, target_type="int")
 
     return df_int

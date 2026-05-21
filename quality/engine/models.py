@@ -4,7 +4,6 @@ from datetime import datetime
 
 @dataclass
 class ErroArquivo:
-
     regra: str
     severidade: str
     detalhe: str
@@ -12,7 +11,6 @@ class ErroArquivo:
 
 @dataclass
 class ErroLinha:
-
     linha_arquivo: int
     campo: str
     tipo_erro: str
@@ -21,7 +19,6 @@ class ErroLinha:
 
 @dataclass
 class ExecucaoArquivo:
-
     id_execucao: int
 
     arquivo: str

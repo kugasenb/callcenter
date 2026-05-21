@@ -21,7 +21,7 @@ workspace_path = (
 
 repo_root = "/".join(workspace_path.split("/")[:4])
 
-CONFIG_PATH = f"/Workspace{repo_root}/dlt/dlt_config.json"
+CONFIG_PATH = f"/Workspace{repo_root}/dlt/medalion/dlt_config.json"
 
 # ============================================
 # LOAD CONFIG

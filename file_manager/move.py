@@ -48,5 +48,5 @@ class FileManager:
 
         return FileManager.move_file(
             source_path=source_path,
-            target_folder="aproved"
+            target_folder="approved"
         )

@@ -9,16 +9,40 @@ class Engine:
         nm_arquivo
     ):
 
+        # =====================================
+        # AJUSTA OBJETOS COMPLEXOS
+        # =====================================
+
+        for r in resultados:
+
+            if "amostra" in r:
+
+                r["amostra"] = str(
+                    r["amostra"]
+                )
+
+        # =====================================
+        # TOTAL ERROS
+        # =====================================
+
         total_erros = sum(
             r["total_erros"]
             for r in resultados
         )
+
+        # =====================================
+        # STATUS
+        # =====================================
 
         status = (
             "rejeitado"
             if total_erros > 0
             else "aprovado"
         )
+
+        # =====================================
+        # PAYLOAD
+        # =====================================
 
         payload = {
 

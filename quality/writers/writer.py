@@ -111,7 +111,7 @@ class Writer:
 
             if r["total_erros"] > 0:
 
-                amostra = r["amostra"].collect()
+                amostra = r["amostra"]
 
                 for row in amostra:
 

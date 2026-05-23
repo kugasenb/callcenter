@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 from datetime import datetime
 import time
 from pyspark.sql import SparkSession
-from src.utils.file import Conversor
+
 
 
 spark = SparkSession.getActiveSession()
@@ -18,6 +18,9 @@ def silver(df):
 
     campos_data = ["data_discagem"]
 
-    df_int = Conversor.convert_columns(df=df, columns=campos_int, target_type="int")
+    df = df.withColumn(
+        "int"
+        , f.lit(1)
+    )
 
-    return df_int
+    return df

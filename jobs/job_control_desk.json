@@ -1,43 +1,13 @@
 {
-  "name": "job_control_desk",
-
-  "tasks": [
-
-    {
-      "task_key": "quality",
-
-      "pipeline_task": {
-        "pipeline_id": "d32455cd-439f-496e-b1b7-16e424773cf8"
-      }
-    },
-
-    {
-      "task_key": "move_files",
-
-      "depends_on": [
-        {
-          "task_key": "quality"
+  "name": "job_arquivo_retorno_control_desk"
+  
+  , "tasks": [
+      {
+        "task_key": "medalion"
+        , "pipeline_task": {
+          "pipeline_id": "cc8c5dfe-450a-4cab-baa2-83349cb5f23d"
         }
-      ],
-
-      "notebook_task": {
-        "notebook_path": "/Workspace/Users/lucasenb1@gmail.com/control-desk/notebooks/operations/move_files"
       }
-    },
 
-    {
-      "task_key": "medalion",
-
-      "depends_on": [
-        {
-          "task_key": "move_files"
-        }
-      ],
-
-      "pipeline_task": {
-        "pipeline_id": "cc8c5dfe-450a-4cab-baa2-83349cb5f23d"
-      }
-    }
-
-  ]
+    ]
 }

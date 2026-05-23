@@ -4,6 +4,7 @@ from quality.writers.writer import Writer
 
 
 class Quality:
+    
     @staticmethod
     def validar_arquivo(df, nm_arquivo):
         # =========================

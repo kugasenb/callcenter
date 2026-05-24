@@ -21,16 +21,46 @@ class FileReader:
 
     @staticmethod
     def read_csv(path: str, use_spark=False, **kwargs):
-        from pyspark.sql import functions as f
 
-        if use_spark:
-            return (
-                spark.read.options(**kwargs)
-                .csv(path)
-                .withColumn(
-                    "source_file",
-                    f.element_at(f.split(f.col("_metadata.file_path"), "/"), -1),
+        try:
+
+            if use_spark:
+
+                df = (
+                    spark.read
+                    .options(**kwargs)
+                    .csv(path)
+                    .withColumn(
+                        "source_file",
+                        f.element_at(
+                            f.split(
+                                f.col("_metadata.file_path"),
+                                "/"
+                            ),
+                            -1
+                        )
+                    )
                 )
-            )
 
-        return pd.read_csv(path, **kwargs)
+                # força validação
+                df.limit(1).collect()
+
+            else:
+
+                df = pd.read_csv(path, **kwargs)
+
+                df["source_file"] = os.path.basename(path)
+
+            return {
+                "status": True,
+                "df": df,
+                "erro": None
+            }
+
+        except Exception as e:
+
+            return {
+                "status": False,
+                "df": None,
+                "erro": str(e)
+            }

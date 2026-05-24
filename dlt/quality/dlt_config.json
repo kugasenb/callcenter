@@ -2,42 +2,43 @@
   "tables": [
 
     {
-      "name": "execucao_arquivo",
+      "name": "execucao_arquivo"
+      , "catalog": "callcenter"
+      , "schema": "quality"
+      , "type": "table"
+      
+      
+      ,"transform": {
+        "module": "quality.pipelines.quality_discagem"
+        , "class": "Quality"
+        , "fn": "validar_arquivo"
+      }
 
-      "catalog": "callcenter",
-      "schema": "quality",
-      "type": "table",
-
-      "transform": {
-       "module": "quality.pipelines.quality_discagem"
-       , "class": "Quality"
-       , "fn": "validar_arquivo"
-      },
-
-      "params": {
+      
+      , "params": {
         "dir_path": "/Volumes/workspace/callcenter/disc_volumes/landing/"
-      },
-
-      "sources": []
-    },
-
-    {
-      "name": "erros_linha",
-
-      "catalog": "callcenter",
-      "schema": "quality",
-      "type": "table",
-
-      "transform": {
-        "module": "quality.pipelines.quality_discagem",
-        "fn": "erros_linha"
-      },
-
-      "params": {
-        "dir_path": "/Volumes/workspace/callcenter/disc_volumes/landing/"
-      },
-
-      "sources": []
+      }
+      
+      , "sources": []
+    }
+    
+    , {
+        "name": "erros_linha"
+        , "catalog": "callcenter"
+        , "schema": "quality"
+        , "type": "table"
+        
+        , "transform": {
+          "module": "quality.pipelines.quality_discagem"
+          , "fn": "erros_linha"
+        }
+        
+        
+        , "params": {
+          "dir_path": "/Volumes/workspace/callcenter/disc_volumes/landing/"
+        }
+        
+        , "sources": []
     },
 
     {

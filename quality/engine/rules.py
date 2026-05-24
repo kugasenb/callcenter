@@ -2,6 +2,7 @@ from pyspark.sql import functions as f
 
 
 class Rules:
+    
     @staticmethod
     def validar_telefone_nulo(df):
         df_erro = df.filter(f.col("telefone").isNull())

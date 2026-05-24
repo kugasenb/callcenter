@@ -2,6 +2,7 @@ from datetime import datetime
 
 
 class Engine:
+    
     @staticmethod
     def processar_resultados(resultados, nm_arquivo):
         total_erros = sum(r["total_erros"] for r in resultados)

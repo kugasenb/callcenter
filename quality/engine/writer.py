@@ -9,6 +9,8 @@ spark = SparkSession.getActiveSession()
 
 
 class Writer:
+
+    
     @staticmethod
     def gravar_execucao(payload):
         data = [

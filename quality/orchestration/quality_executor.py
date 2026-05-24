@@ -18,30 +18,72 @@ workspace_path = (
     .get()
 )
 
-repo_root = "/".join(workspace_path.split("/")[:4])
-
-CONFIG_PATH = f"file:/Workspace{repo_root}/dlt/quality/dlt_config.json"
+repo_root = "/".join(
+    workspace_path.split("/")[:4]
+)
 
 # ============================================
 # LOAD CONFIG
 # ============================================
 
-config_content = dbutils.fs.head(CONFIG_PATH, 100000)
+CONFIG_PATH = (
+    f"/Workspace{repo_root}/dlt/quality/dlt_config.json"
+)
 
-CONFIG = json.loads(config_content)
+with open(CONFIG_PATH, "r") as file:
+
+    CONFIG = json.load(file)
 
 # ============================================
 # BUILD TABLES
 # ============================================
 
 for table in CONFIG["tables"]:
-    module = importlib.import_module(table["transform"]["module"])
 
-    transform_function = getattr(module, table["transform"]["fn"])
+    module = importlib.import_module(
+        table["transform"]["module"]
+    )
 
-    def build_table(transform_function=transform_function, table=table):
+    # ========================================
+    # CLASS OR FUNCTION
+    # ========================================
+
+    if "class" in table["transform"]:
+
+        cls = getattr(
+            module,
+            table["transform"]["class"]
+        )
+
+        transform_function = getattr(
+            cls,
+            table["transform"]["fn"]
+        )
+
+    else:
+
+        transform_function = getattr(
+            module,
+            table["transform"]["fn"]
+        )
+
+    # ========================================
+    # BUILD TABLE
+    # ========================================
+
+    def build_table(
+        transform_function=transform_function,
+        table=table
+    ):
+
         params = table.get("params", {})
 
         return transform_function(**params)
 
-    dlt.table(name=table["name"])(build_table)
+    # ========================================
+    # DLT TABLE
+    # ========================================
+
+    dlt.table(
+        name=table["name"]
+    )(build_table)

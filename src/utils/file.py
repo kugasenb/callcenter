@@ -51,16 +51,8 @@ class FileReader:
 
                 df["source_file"] = os.path.basename(path)
 
-            return {
-                "status": True,
-                "df": df,
-                "erro": None
-            }
+            return df
 
         except Exception as e:
 
-            return {
-                "status": False,
-                "df": None,
-                "erro": str(e)
-            }
+            raise Exception(e)

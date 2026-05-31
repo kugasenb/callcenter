@@ -30,6 +30,21 @@ def quality_executor(path=None, process_name=None, debug=None, **kwargs):
 
     arquivos = dbutils.fs.ls(path)
 
+    arquivos_processados = (
+        spark.table(
+            "quality_layer.quality.file_control"
+        )
+        .select("path_arquivo")
+    )
+
+    arquivos_processados = {
+
+        row["path_arquivo"]
+
+        for row in arquivos_processados.collect()
+
+    }
+
     if debug:
 
         arquivos = arquivos[:10]
@@ -37,6 +52,15 @@ def quality_executor(path=None, process_name=None, debug=None, **kwargs):
     for arquivo in arquivos:
 
         if not arquivo.path.endswith(".csv"):
+
+            continue
+
+        if arquivo.path in arquivos_processados:
+
+            print(
+                f"Arquivo já processado: "
+                f"{arquivo.name}"
+            )
 
             continue
 

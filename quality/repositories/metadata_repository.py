@@ -12,8 +12,8 @@ class MetadataRepository:
 
         rows = [{
 
-            "nm_arquivo": payload["nm_arquivo"],
-            "status": payload["status"]
+            "nm_arquivo": payload["nm_arquivo"]
+            , "status": payload["status"]
 
         }]
 
@@ -27,19 +27,24 @@ class MetadataRepository:
         (
             delta_table.alias("target")
             .merge(
-                df.alias("source"),
-                "target.nm_arquivo = source.nm_arquivo"
+                df.alias("source")
+                , "target.nm_arquivo = source.nm_arquivo"
             )
+
             .whenMatchedUpdate(set={
 
                 "status": "source.status"
+                , "dt_status": "from_utc_timestamp(current_timestamp(), 'America/Sao_Paulo')"
 
             })
+
             .whenNotMatchedInsert(values={
 
-                "nm_arquivo": "source.nm_arquivo",
-                "status": "source.status"
+                "nm_arquivo": "source.nm_arquivo"
+                , "status": "source.status"
+                , "dt_status": "from_utc_timestamp(current_timestamp(), 'America/Sao_Paulo')"
 
             })
+
             .execute()
-        )
+        ) 

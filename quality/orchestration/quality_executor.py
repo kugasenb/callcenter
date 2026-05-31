@@ -6,42 +6,57 @@ from quality.engine.engine import Engine
 from quality.repositories.metadata_repository import MetadataRepository
 from quality.repositories.event_repository import EventRepository
 from quality.repositories.validation_repository import ValidationRepository
+
 from pyspark.dbutils import DBUtils
+
 from quality.pipelines.quality_discagem import PIPELINE_CONFIG
 
 
-spark = SparkSession.getActiveSession()
+def quality_executor(path=None, process_name=None, debug=None, **kwargs):
 
+    spark = SparkSession.getActiveSession()
 
-arquivos = dbutils.fs.ls(
-    PIPELINE_CONFIG["path"]
-)
+    dbutils = DBUtils(spark)
 
+    if process_name is None:
+        process_name = PIPELINE_CONFIG["nm_pipeline"]
 
-for arquivo in arquivos:
+    if path is None:
+        path = PIPELINE_CONFIG["path"]
 
-    if not arquivo.path.endswith(".csv"):
-        continue
+    arquivos = dbutils.fs.ls(path)
+    
+    if debug:
+        arquivos = arquivos[:10]
 
-    df = (
-        spark.read
-        .option("header", True)
-        .option("sep", ";")
-        .csv(arquivo.path)
-    )
+    for arquivo in arquivos:
 
-    resultados = Validator.run(
-        df=df,
-        rules=PIPELINE_CONFIG["rules"]
-    )
+        if not arquivo.path.endswith(".csv"):
+            continue
 
-    payload = Engine.processar_resultados(
-        resultados=resultados,
-        nm_arquivo=arquivo.name
-    )
+        print(f"Processando arquivo: {arquivo.name}")
 
-    ValidationRepository.salvar_validacoes(payload)
+        df = (
+            spark.read
+            .option("header", True)
+            .option("sep", ";")
+            .csv(arquivo.path)
+        )
 
-    MetadataRepository.salvar_status(payload)
+        resultados = Validator.run(
+            df=df,
+            rules=PIPELINE_CONFIG["rules"]
+        )
 
-    EventRepository.salvar_evento(payload)
+        payload = Engine.processar_resultados(
+            resultados=resultados,
+            nm_arquivo=arquivo.name
+        )
+
+        ValidationRepository.salvar_validacoes(payload)
+
+        MetadataRepository.salvar_status(payload)
+
+        EventRepository.salvar_evento(payload)
+
+        print(f"Finalizado: {arquivo.name}")

@@ -18,7 +18,13 @@ def quality_executor(path=None, process_name=None, debug=None, **kwargs):
 
     spark = SparkSession.getActiveSession()
 
-    dbutils = DBUtils(spark)
+    try:
+
+        dbutils = DBUtils(spark)
+
+    except Exception:
+
+        dbutils = None
 
     if process_name is None:
 

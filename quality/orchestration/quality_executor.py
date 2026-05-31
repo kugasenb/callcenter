@@ -6,7 +6,7 @@ from quality.engine.engine import Engine
 from quality.repositories.metadata_repository import MetadataRepository
 from quality.repositories.event_repository import EventRepository
 from quality.repositories.validation_repository import ValidationRepository
-
+from pyspark.dbutils import DBUtils
 from quality.pipelines.quality_discagem import PIPELINE_CONFIG
 
 

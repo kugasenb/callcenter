@@ -1,3 +1,5 @@
+import uuid
+
 from pyspark.sql import SparkSession
 
 from quality.validators.validator import Validator
@@ -19,20 +21,26 @@ def quality_executor(path=None, process_name=None, debug=None, **kwargs):
     dbutils = DBUtils(spark)
 
     if process_name is None:
+
         process_name = PIPELINE_CONFIG["nm_pipeline"]
 
     if path is None:
+
         path = PIPELINE_CONFIG["path"]
 
     arquivos = dbutils.fs.ls(path)
-    
+
     if debug:
+
         arquivos = arquivos[:10]
 
     for arquivo in arquivos:
 
         if not arquivo.path.endswith(".csv"):
+
             continue
+
+        id_processamento = str(uuid.uuid4())
 
         print(f"Processando arquivo: {arquivo.name}")
 
@@ -44,13 +52,16 @@ def quality_executor(path=None, process_name=None, debug=None, **kwargs):
         )
 
         resultados = Validator.run(
-            df=df,
-            rules=PIPELINE_CONFIG["rules"]
+            df=df
+            , rules=PIPELINE_CONFIG["rules"]
         )
 
         payload = Engine.processar_resultados(
-            resultados=resultados,
-            nm_arquivo=arquivo.name
+            resultados=resultados
+            , nm_arquivo=arquivo.name
+            , path_arquivo=arquivo.path
+            , nm_pipeline=process_name
+            , id_processamento=id_processamento
         )
 
         ValidationRepository.salvar_validacoes(payload)

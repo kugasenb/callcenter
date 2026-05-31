@@ -1,7 +1,13 @@
 class Engine:
 
     @staticmethod
-    def processar_resultados(resultados, nm_arquivo):
+    def processar_resultados(
+        resultados
+        , nm_arquivo
+        , path_arquivo
+        , nm_pipeline
+        , id_processamento
+    ):
 
         status_final = "PASSED"
 
@@ -14,9 +20,19 @@ class Engine:
                 break
 
         payload = {
-            "nm_arquivo": nm_arquivo
+
+            "id_processamento": id_processamento
+            , "nm_pipeline": nm_pipeline
+            , "nm_arquivo": nm_arquivo
+            , "path_arquivo": path_arquivo
             , "status": status_final
+            , "evento": "VALIDATION_FINISHED"
+            , "mensagem": (
+                f"Processamento finalizado "
+                f"com status {status_final}"
+            )
             , "resultados": resultados
+
         }
 
         return payload

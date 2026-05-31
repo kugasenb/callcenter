@@ -8,5 +8,6 @@ PIPELINE_CONFIG = {
     , "rules": [
         Rules.validar_telefone_nulo
         , Rules.validar_data_nula
+        , Rules.validar_padrao_data
     ]
 }

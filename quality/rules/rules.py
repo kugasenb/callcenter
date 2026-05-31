@@ -36,3 +36,26 @@ class Rules:
             , "status": "PASSED" if qtd_invalidos == 0 else "REJECTED"
             , "qtd_invalidos": qtd_invalidos
         }
+
+    @staticmethod
+    def validar_padrao_data(df):
+
+        qtd_invalidos = (
+
+            df
+            .filter(
+                ~f.col("data_discagem").rlike(
+                    r"^\d{4}-\d{2}-\d{2}$"
+                )
+            )
+            .count()
+
+        )
+
+        return {
+
+            "regra": "validar_padrao_data",
+            "status": "PASSED" if qtd_invalidos == 0 else "REJECTED",
+            "qtd_invalidos": qtd_invalidos
+
+        }
